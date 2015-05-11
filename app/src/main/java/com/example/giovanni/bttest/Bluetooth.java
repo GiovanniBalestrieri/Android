@@ -28,6 +28,13 @@ import static android.support.v4.app.ActivityCompat.startActivityForResult;
  * Created by userk on 07/04/15.
  */
 public class Bluetooth {
+
+    static public boolean takeOffState = false;
+    static public boolean landState = false;
+    static public boolean pidState = false;
+    static public boolean warningState = false;
+
+    private static final String CONNECTION_ACK = "K" ;
     public static int TURNED_ON = 1;
     public static int TURNED_OFF = 0;
     public static int ASSOCIATED = 2;
@@ -167,7 +174,6 @@ public class Bluetooth {
 
         try {
             mmSocket.connect();
-            associated = true;
             //beginListenForData();
             //out.append("\n...Connection established and data link opened...");
         } catch (IOException e) {
@@ -189,59 +195,13 @@ public class Bluetooth {
         try {
             mmOutputStream = mmSocket.getOutputStream();
             blueWrite("b");
+            beginListenForData();
         } catch (IOException e) {
-
             Log.e("Settings report", "Output stream creation failed:" + e.getMessage() + ".");
         }
     }
 
-    /*
-    public static void connectToTenzo() throws IOException {
-        BluetoothSocket mmSocket = null;
 
-        //UUID uuid = UUID.fromString(uid);
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-
-        // Set up a pointer to the remote node using it's address.
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(uid);
-        try {
-            mmSocket = device.createRfcommSocketToServiceRecord(uuid);
-        } catch (IOException e) {
-            // Qualcosa
-            associated = false;
-        }
-        // Cancel discovery because it will slow down the connection
-        mBluetoothAdapter.cancelDiscovery();
-
-        try {
-            mmSocket.connect();
-            associated = true;
-            //beginListenForData();
-            //out.append("\n...Connection established and data link opened...");
-        } catch (IOException e) {
-            try {
-                mmSocket.close();
-                associated = false;
-            } catch (IOException e2) {
-                Toast.makeText(activity.getApplicationContext(), "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".", Toast.LENGTH_LONG)
-                        .show();
-                associated = false;
-            }
-        }
-        try {
-            mmInputStream = mmSocket.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mmOutputStream = mmSocket.getOutputStream();
-        } catch (IOException e) {
-
-            Log.e("Settings report", "Output stream creation failed:" + e.getMessage() + ".");
-        }
-    }
-*/
     public boolean isAssociated() {
         if (associated)
             return true;
@@ -280,8 +240,7 @@ public class Bluetooth {
             {
                 while(!Thread.currentThread().isInterrupted() && !stopWorker)
                 {
-                    try
-                    {
+                    try {
                         int bytesAvailable = mmInputStream.available();
                         if(bytesAvailable > 0)
                         {
@@ -302,6 +261,45 @@ public class Bluetooth {
                                         public void run()
                                         {
                                             //myLabel.setText(data);
+                                            char first = data.charAt(0);
+                                            if (first=='K')
+                                            {
+                                                blueWrite("K");
+                                                associated = true;
+                                            }else if (first=='s') {
+                                                // TODO passa i valori a CPanel
+                                                String values[] = data.replace("o,","").split(",");
+                                                String v1 = "";
+                                                String v2 = "";
+                                                String v3 = "";
+                                                String v4 = "";
+                                                if(values != null && values.length == 4) {
+                                                    v1 = values[0];
+                                                    v2 = values[1];
+                                                    v3 = values[2];
+                                                    v4 = values[3];
+                                                }
+                                                if (Integer.getInteger(v1) == 1) {
+                                                    takeOffState = true;
+                                                }else if (Integer.getInteger(v1) == 0){
+                                                    takeOffState = false;
+                                                }
+                                                if (Integer.getInteger(v2) == 1) {
+                                                    landState = true;
+                                                }else if (Integer.getInteger(v2) == 0){
+                                                    landState = false;
+                                                }
+                                                if (Integer.getInteger(v3) == 1) {
+                                                    pidState = true;
+                                                }else if (Integer.getInteger(v3) == 0){
+                                                    pidState = false;
+                                                }
+                                                if (Integer.getInteger(v3) == 1) {
+                                                    warningState = true;
+                                                }else if (Integer.getInteger(v3) == 0){
+                                                    warningState = false;
+                                                }
+                                            }
                                             Toast.makeText(activity.getApplicationContext(), data, Toast.LENGTH_LONG)
                                                     .show();
                                         }

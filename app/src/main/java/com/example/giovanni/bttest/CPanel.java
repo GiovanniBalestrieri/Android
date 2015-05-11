@@ -28,6 +28,10 @@ import java.io.InputStream;
  */
 public class CPanel extends Fragment
 {
+    public boolean takeOffState = false;
+    public boolean landState = false;
+    public boolean pidState = false;
+    public boolean warningState = false;
     LinearLayout takeOff;
     LinearLayout land;
     LinearLayout map;
@@ -113,6 +117,7 @@ public class CPanel extends Fragment
                                                 log.setText(data);
                                                 //Toast.makeText(getActivity().getApplicationContext(), data, Toast.LENGTH_LONG)
                                                 //        .show();
+
                                                 char first = data.charAt(0);
                                                 if (first=='o') {
                                                     // Orientation status
@@ -149,6 +154,37 @@ public class CPanel extends Fragment
                                                 }
                                                 else if (first=='s') {
                                                     // TODO state.setText()
+                                                    String values[] = data.replace("o,","").split(",");
+                                                    String v1 = "";
+                                                    String v2 = "";
+                                                    String v3 = "";
+                                                    String v4 = "";
+                                                    if(values != null && values.length == 4) {
+                                                        v1 = values[0];
+                                                        v2 = values[1];
+                                                        v3 = values[2];
+                                                        v4 = values[3];
+                                                    }
+                                                    if (Integer.getInteger(v1) == 1) {
+                                                        takeOffState = true;
+                                                    }else if (Integer.getInteger(v1) == 0){
+                                                        takeOffState = false;
+                                                    }
+                                                    if (Integer.getInteger(v2) == 1) {
+                                                        landState = true;
+                                                    }else if (Integer.getInteger(v2) == 0){
+                                                        landState = false;
+                                                    }
+                                                    if (Integer.getInteger(v3) == 1) {
+                                                        pidState = true;
+                                                    }else if (Integer.getInteger(v3) == 0){
+                                                        pidState = false;
+                                                    }
+                                                    if (Integer.getInteger(v3) == 1) {
+                                                        warningState = true;
+                                                    }else if (Integer.getInteger(v3) == 0){
+                                                        warningState = false;
+                                                    }
                                                 }
                                             }
                                         });
@@ -272,7 +308,7 @@ public class CPanel extends Fragment
             public void onClick(View v)
             {
                 if (blue.isAssociated()) {
-                    Log.e("CPanel Report", "Click Status");
+                    Log.e("CPanel Report", "Click Pid");
                     String msg = "s";
                     msg += "\n";
                     if (blue.blueWrite(msg)) {
@@ -312,12 +348,31 @@ public class CPanel extends Fragment
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
-                if (isChecked) {
-                    //aRoll.setText("Switch is currently ON");
-                    orient.setVisibility(LinearLayout.VISIBLE);
-                } else {
-                    //aRoll.setText("Switch is currently OFF");
-                    orient.setVisibility(LinearLayout.GONE);
+                if (blue.isAssociated())
+                {
+                    Log.e("CPanel Report", "Click getOrient");
+                    if (isChecked) {
+                        //aRoll.setText("Switch is currently ON");
+                        orient.setVisibility(LinearLayout.VISIBLE);
+                    } else {
+                        //aRoll.setText("Switch is currently OFF");
+                        orient.setVisibility(LinearLayout.GONE);
+                    }
+                    String msg = "t";
+                    msg += "\n";
+                    if (blue.blueWrite(msg)) {
+                        Toast.makeText(getActivity().getApplicationContext(), " Sent: " + msg, Toast.LENGTH_LONG)
+                                .show();
+                    }
+                    else {
+                        Toast.makeText(getActivity().getApplicationContext(), " Message error ", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(getActivity().getApplicationContext(), " No device found. Connect first!", Toast.LENGTH_LONG)
+                            .show();
                 }
             }
         });
@@ -345,8 +400,7 @@ public class CPanel extends Fragment
             {
                 if (blue.isAssociated())
                 {
-                    Log.e("CPanel Report", "Click Status");
-                    String msg = "s";
+                    String msg = "p";
                     msg += "\n";
                     if (blue.blueWrite(msg)) {
                         Toast.makeText(getActivity().getApplicationContext(), " Sent: " + msg, Toast.LENGTH_LONG)

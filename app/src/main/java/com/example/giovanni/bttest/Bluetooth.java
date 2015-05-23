@@ -254,6 +254,7 @@ public class Bluetooth {
                                     byte[] encodedBytes = new byte[readBufferPosition];
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
+
                                     readBufferPosition = 0;
 
                                     handler.post(new Runnable()
@@ -261,14 +262,16 @@ public class Bluetooth {
                                         public void run()
                                         {
                                             //myLabel.setText(data);
-                                            char first = data.charAt(0);
+                                            char first = ' ';
+                                            if (data != null)
+                                                first = data.charAt(0);
                                             if (first=='K')
                                             {
                                                 blueWrite("K");
                                                 associated = true;
                                             }else if (first=='s') {
                                                 // TODO passa i valori a CPanel
-                                                String values[] = data.replace("o,","").split(",");
+                                                String values[] = data.replace("s,","").split(",");
                                                 String v1 = "";
                                                 String v2 = "";
                                                 String v3 = "";
@@ -279,29 +282,27 @@ public class Bluetooth {
                                                     v3 = values[2];
                                                     v4 = values[3];
                                                 }
-                                                if (Integer.getInteger(v1) == 1) {
+                                                if (Integer.parseInt(v1) == 1) {
                                                     takeOffState = true;
-                                                }else if (Integer.getInteger(v1) == 0){
+                                                }else if (Integer.parseInt(v1) == 0){
                                                     takeOffState = false;
                                                 }
-                                                if (Integer.getInteger(v2) == 1) {
+                                                if (Integer.parseInt(v2) == 1) {
                                                     landState = true;
-                                                }else if (Integer.getInteger(v2) == 0){
+                                                }else if (Integer.parseInt(v2) == 0){
                                                     landState = false;
                                                 }
-                                                if (Integer.getInteger(v3) == 1) {
+                                                if (Integer.parseInt(v3) == 1) {
                                                     pidState = true;
-                                                }else if (Integer.getInteger(v3) == 0){
+                                                }else if (Integer.parseInt(v3) == 0){
                                                     pidState = false;
                                                 }
-                                                if (Integer.getInteger(v3) == 1) {
+                                                if (Integer.parseInt(v3) == 1) {
                                                     warningState = true;
-                                                }else if (Integer.getInteger(v3) == 0){
+                                                }else if (Integer.parseInt(v3) == 0){
                                                     warningState = false;
                                                 }
                                             }
-                                            Toast.makeText(activity.getApplicationContext(), data, Toast.LENGTH_LONG)
-                                                    .show();
                                         }
                                     });
                                 }

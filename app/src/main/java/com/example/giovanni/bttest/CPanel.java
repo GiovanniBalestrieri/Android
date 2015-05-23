@@ -433,14 +433,14 @@ public class CPanel extends Fragment
         });
         */
         map.setOnClickListener(new View.OnClickListener()
-    {
-        public void onClick(View v)
         {
-            Intent map = new Intent(getActivity().getApplicationContext(), RoverPosition.class);
-            //map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(map);
-        }
-    });
+            public void onClick(View v)
+            {
+                Intent map = new Intent(getActivity().getApplicationContext(), RoverPosition.class);
+                //map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(map);
+            }
+        });
 
     Log.e("Cpanel report", "view created.");
     return v;

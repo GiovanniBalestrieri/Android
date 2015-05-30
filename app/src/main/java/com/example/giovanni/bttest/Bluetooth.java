@@ -233,7 +233,7 @@ public class Bluetooth {
         handler = new Handler();
         stopWorker = false;
         readBufferPosition = 0;
-        readBuffer = new byte[1024];
+        readBuffer = new byte[1024];blueoot
         workerThread = new Thread(new Runnable()
         {
             public void run()

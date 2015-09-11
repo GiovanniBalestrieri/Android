@@ -194,7 +194,7 @@ public class Bluetooth {
 
         try {
             mmOutputStream = mmSocket.getOutputStream();
-            blueWrite("b");
+            blueWrite("c");
             beginListenForData();
         } catch (IOException e) {
             Log.e("Settings report", "Output stream creation failed:" + e.getMessage() + ".");
@@ -233,7 +233,7 @@ public class Bluetooth {
         handler = new Handler();
         stopWorker = false;
         readBufferPosition = 0;
-        readBuffer = new byte[1024];blueoot
+        readBuffer = new byte[1024];
         workerThread = new Thread(new Runnable()
         {
             public void run()
